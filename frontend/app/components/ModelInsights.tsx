@@ -50,6 +50,9 @@ type GlobalExplanations = {
   notice: string;
 };
 
+let comparisonCache: Comparison | null = null;
+let explanationsCache: GlobalExplanations | null = null;
+
 function Panel({
   eyebrow,
   title,
@@ -77,13 +80,13 @@ export default function ModelInsights({
 }: {
   onBack: () => void;
 }) {
-  const [comparison, setComparison] = useState<Comparison | null>(null);
-  const [explanations, setExplanations] = useState<GlobalExplanations | null>(null);
+  const [comparison, setComparison] = useState<Comparison | null>(comparisonCache);
+  const [explanations, setExplanations] = useState<GlobalExplanations | null>(explanationsCache);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!(comparisonCache && explanationsCache));
 
   const loadData = useCallback(async () => {
-    setLoading(true);
+    setLoading(!(comparisonCache && explanationsCache));
     setError("");
 
     try {
@@ -113,14 +116,18 @@ export default function ModelInsights({
         shapResponse.json(),
       ]);
 
-      setComparison(comparisonData);
-      setExplanations(shapData);
+      comparisonCache = comparisonData as Comparison;
+      explanationsCache = shapData as GlobalExplanations;
+      setComparison(comparisonCache);
+      setExplanations(explanationsCache);
     } catch (cause) {
-      setError(
-        cause instanceof Error
-          ? cause.message
-          : "Could not load model insights. Check that the Monetra API is running."
-      );
+      if (!comparisonCache || !explanationsCache) {
+        setError(
+          cause instanceof Error
+            ? cause.message
+            : "Could not load model insights. Check that the Monetra API is running."
+        );
+      }
     } finally {
       setLoading(false);
     }

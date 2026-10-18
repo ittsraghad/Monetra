@@ -57,6 +57,8 @@ type Overview = {
   notice: string;
 };
 
+let overviewCache: Overview | null = null;
+
 function Panel({
   eyebrow,
   title,
@@ -114,12 +116,12 @@ export default function DataExplorer({
 }: {
   onBack: () => void;
 }) {
-  const [data, setData] = useState<Overview | null>(null);
+  const [data, setData] = useState<Overview | null>(overviewCache);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!overviewCache);
 
   const loadData = useCallback(async () => {
-    setLoading(true);
+    setLoading(!overviewCache);
     setError("");
 
     try {
@@ -128,11 +130,15 @@ export default function DataExplorer({
         throw new Error(`Analytics request failed (${response.status}).`);
       }
 
-      setData(await response.json());
+      const overview = (await response.json()) as Overview;
+      overviewCache = overview;
+      setData(overview);
     } catch {
-      setError(
-        "Could not load the dataset analytics. Make sure the Monetra API is running and try again."
-      );
+      if (!overviewCache) {
+        setError(
+          "Could not load the dataset analytics. Make sure the Monetra API is running and try again."
+        );
+      }
     } finally {
       setLoading(false);
     }
