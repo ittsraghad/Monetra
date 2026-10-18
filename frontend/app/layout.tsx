@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://monetra.vercel.app"),
+  metadataBase: new URL("https://monetra-seven.vercel.app"),
   title: {
     default: "Monetra | AI-Powered Credit Risk Analysis",
     template: "%s | Monetra",
@@ -32,9 +32,17 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Monetra | AI-Powered Credit Risk Analysis",
     description:
-      "Understand credit default risk through intelligent predictions and explainable AI.",
+      "Monetra is an AI-powered credit risk analysis platform featuring machine learning predictions, explainable AI with SHAP, interactive analytics, and batch CSV risk assessment.",
     siteName: "Monetra",
     type: "website",
+    images: [
+      {
+        url: "/monetra-preview.png",
+        width: 1200,
+        height: 630,
+        alt: "Monetra AI-Powered Credit Risk Analysis Dashboard",
+      },
+    ],
   },
 };
 
